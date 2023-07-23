@@ -1,13 +1,18 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors");
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// set middleware
-app.use(cors());
-app.use(express.json());
+//set Middlewar
+const corsConfig = {
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  }
+  app.use(cors(corsConfig))
+  app.use(express.json());
 
 
 
@@ -22,39 +27,67 @@ const client = new MongoClient(uri, {
   }
 });
 
-async function run() {
+const dbConnect = async () => {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    client.connect();
+    console.log(" Database Connected Successfully✅ ");
+
+  } catch (error) {
+    console.log(error.name, error.message);
+  }
+}
+dbConnect()
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
 
     const collegeCollection = client.db('collegeDb').collection('collegeService');
+    const admissionCollection = client.db('collegeDb').collection('admission');
 
+    app.get('/', (req, res) => {
+          res.send('Boss is sitting');
+      })
+
+
+    //all college data load for display
     app.get('/college', async(req, res) => {
       const curson = collegeCollection.find();
       const result = await curson.toArray();
       res.send(result);
     })
 
+    //admission form data load for college name
+    app.get('/college/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await collegeCollection.findOne(query);
+      res.send(result);
+  })
 
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
-  }
-}
-run().catch(console.dir);
-
-
-app.get('/', (req, res) => {
-    res.send('Boss is sitting');
+  // Add toys 
+  app.put('/admission', async (req, res) => {
+    const addingAdmission = req.body;
+    const result = await admissionCollection.insertOne(addingAdmission);
+    res.send(result);
 })
+
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     // await client.close();
+//   }
+// }
+// run().catch(console.dir);
+
+
+// app.get('/', (req, res) => {
+//     res.send('Boss is sitting');
+// })
 
 
 app.listen(port, () => {
     console.log(`Bistro boss is sitting on port ${port}`);
 })
-
-//collegeServicesUser
-//2qIAvjmIyruYsB9V

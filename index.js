@@ -55,6 +55,20 @@ dbConnect()
       res.send(result);
     })
 
+    //search college
+    app.get("/searchcollege/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await collegeCollection
+        .find({
+          $or: [
+            { collegeName: { $regex: text, $options: "i" } },
+            // { category: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
+
     //feedback 
     app.get('/feedback', async(req, res) => {
       const curson = feedbackCollection.find();

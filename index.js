@@ -37,13 +37,11 @@ const dbConnect = async () => {
   }
 }
 dbConnect()
-// async function run() {
-//   try {
-//     // Connect the client to the server	(optional starting in v4.7)
-//     await client.connect();
+
 
     const collegeCollection = client.db('collegeDb').collection('collegeService');
     const admissionCollection = client.db('collegeDb').collection('admission');
+    const feedbackCollection = client.db('collegeDb').collection('feedback');
 
     app.get('/', (req, res) => {
           res.send('Boss is sitting');
@@ -56,6 +54,20 @@ dbConnect()
       const result = await curson.toArray();
       res.send(result);
     })
+
+    //feedback 
+    app.get('/feedback', async(req, res) => {
+      const curson = feedbackCollection.find();
+      const result = await curson.toArray();
+      res.send(result);
+    })
+
+    // Add feedback
+  app.put('/feedback', async (req, res) => {
+    const addingFeedback = req.body;
+    const result = await feedbackCollection.insertOne(addingFeedback);
+    res.send(result);
+})
 
     //admission form data load for college name
     app.get('/college/:id', async(req, res) => {
@@ -81,21 +93,6 @@ app.get('/mycollege', async (req, res) => {
   const result = await admissionCollection.find(query).toArray();
   res.send(result);
 })
-
-//     // Send a ping to confirm a successful connection
-//     await client.db("admin").command({ ping: 1 });
-//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     // await client.close();
-//   }
-// }
-// run().catch(console.dir);
-
-
-// app.get('/', (req, res) => {
-//     res.send('Boss is sitting');
-// })
 
 
 app.listen(port, () => {

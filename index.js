@@ -16,9 +16,9 @@ const corsConfig = {
 
 
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5a8lj4m.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dlfcii5.mongodb.net/?retryWrites=true&w=majority`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -44,7 +44,7 @@ dbConnect()
     const feedbackCollection = client.db('collegeDb').collection('feedback');
 
     app.get('/', (req, res) => {
-          res.send('Boss is sitting');
+          res.send('College is runing');
       })
 
 
@@ -110,5 +110,5 @@ app.get('/mycollege', async (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`Bistro boss is sitting on port ${port}`);
+    console.log(`College Portal is sitting on port ${port}`);
 })
